@@ -1,10 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
- 
+  <parent>
+    <artifactId>storm</artifactId>
+    <groupId>org.apache.storm</groupId>
+    <version>1.1.1</version>
+    <!--<relativePath>../../pom.xml</relativePath>-->
+  </parent>
   <groupId>com.pgmx.cloud.poc</groupId>
   <artifactId>poc2</artifactId>
-  <version>1.0</version>
+  <version>1.1.1</version>
   <packaging>jar</packaging>
  
   <name>cloud poc2</name>
@@ -16,6 +21,12 @@
   </properties>
  
   <dependencies>
+    <!-- https://mvnrepository.com/artifact/org.apache.storm/storm-cassandra -->
+    <!--<dependency>-->
+    <!--<groupId>org.apache.storm</groupId>-->
+    <!--<artifactId>storm-cassandra</artifactId>-->
+    <!--<version>1.1.1</version>-->
+    <!--</dependency>-->
 
     <dependency>
       <groupId>org.apache.storm</groupId>
@@ -23,15 +34,55 @@
       <version>1.1.1</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+    <!--<dependency>-->
+      <!--<groupId>com.opencsv</groupId>-->
+      <!--<artifactId>opencsv</artifactId>-->
+      <!--<version>3.3</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.hdrhistogram</groupId>-->
+      <!--<artifactId>HdrHistogram</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>junit</groupId>-->
+      <!--<artifactId>junit</artifactId>-->
+      <!--<scope>test</scope>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.testng</groupId>-->
+      <!--<artifactId>testng</artifactId>-->
+      <!--<version>6.8.5</version>-->
+      <!--<scope>test</scope>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.mockito</groupId>-->
+      <!--<artifactId>mockito-all</artifactId>-->
+      <!--<scope>test</scope>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.easytesting</groupId>-->
+      <!--<artifactId>fest-assert-core</artifactId>-->
+      <!--<version>2.0M8</version>-->
+      <!--<scope>test</scope>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.jmock</groupId>-->
+      <!--<artifactId>jmock</artifactId>-->
+      <!--<version>2.6.0</version>-->
+      <!--<scope>test</scope>-->
+    <!--</dependency>-->
+
+    <!--begin storm-kafka-->
     <dependency>
       <groupId>org.apache.storm</groupId>
       <artifactId>storm-kafka</artifactId>
-      <version>1.1.1</version>
-      <scope>compile</scope>
+      <version>${project.version}</version>
+      <scope>${provided.scope}</scope>
       <exclusions>
         <exclusion>
           <groupId>org.apache.kafka</groupId>
-          <artifactId>kafka_2.10</artifactId>
+          <artifactId>${storm.kafka.artifact.id}</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.apache.kafka</groupId>
@@ -39,22 +90,56 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!--<dependency>-->
-      <!--<groupId>org.apache.storm</groupId>-->
-      <!--<artifactId>storm-starter</artifactId>-->
-      <!--<version>1.1.1</version>-->
-      <!--<exclusions>-->
-        <!--<exclusion>-->
-          <!--<groupId>org.apache.kafka</groupId>-->
-          <!--<artifactId>${storm.kafka.artifact.id}</artifactId>-->
-        <!--</exclusion>-->
-        <!--<exclusion>-->
-          <!--<groupId>org.apache.kafka</groupId>-->
-          <!--<artifactId>kafka-clients</artifactId>-->
-        <!--</exclusion>-->
-      <!--</exclusions>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>org.apache.storm</groupId>
+      <artifactId>storm-starter</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.kafka</groupId>
+          <artifactId>${storm.kafka.artifact.id}</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.kafka</groupId>
+          <artifactId>kafka-clients</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
+    <!--this is old storm kafka-->
+    <dependency>
+      <groupId>org.apache.storm</groupId>
+      <artifactId>storm-starter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.storm</groupId>
+      <artifactId>storm-core</artifactId>
+      <version>${project.version}</version>
+      <scope>${provided.scope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.storm</groupId>
+      <artifactId>storm-kafka</artifactId>
+      <version>${project.version}</version>
+      <!--<scope>${provided.scope}</scope>-->
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>${storm.kafka.artifact.id}</artifactId>
+      <version>${storm.kafka.version}</version>
+      <!--<scope>${provided.scope}</scope>-->
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>${storm.kafka.version}</version>
+      <!--<scope>${provided.scope}</scope>-->
+    </dependency>
+    <!--end of old storm kafka-->
+
+
+    <!-- Kafka client libraries as Storm-Kafka integration library does not include these -->
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka_2.11</artifactId>
@@ -67,7 +152,7 @@
           <artifactId>zookeeper</artifactId>
         </exclusion>
         <!-- Excluded to avoid Pre-emptive StackOverflowException due to version/implementation
-            issues between Kafka slf4j/log4j api and Storm slf4j/log4js api -->
+            issues between Kafka slf4j/log4j api and Storm  slf4j/log4js api -->
         <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
@@ -82,21 +167,80 @@
     <dependency>
       <groupId>org.apache.storm</groupId>
       <artifactId>storm-core</artifactId>
-      <version>1.1.1</version>
+      <version>${project.version}</version>
       <!--
         Use "provided" scope to keep storm out of the jar-with-dependencies
         For IntelliJ dev, intellij will load properly.
       -->
-      <scope>compile</scope>
+      <scope>${provided.scope}</scope>
     </dependency>
-
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.2</version>
+      <groupId>org.apache.storm</groupId>
+      <artifactId>storm-core</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.apache.storm</groupId>-->
+      <!--<artifactId>multilang-javascript</artifactId>-->
+      <!--<version>${project.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.apache.storm</groupId>-->
+      <!--<artifactId>multilang-ruby</artifactId>-->
+      <!--<version>${project.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.apache.storm</groupId>-->
+      <!--<artifactId>multilang-python</artifactId>-->
+      <!--<version>${project.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>commons-collections</groupId>-->
+      <!--<artifactId>commons-collections</artifactId>-->
+      <!--<version>3.2.1</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>com.google.guava</groupId>-->
+      <!--<artifactId>guava</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.apache.storm</groupId>-->
+      <!--<artifactId>storm-metrics</artifactId>-->
+      <!--<version>${project.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.apache.storm</groupId>-->
+      <!--<artifactId>storm-hdfs</artifactId>-->
+      <!--<version>${project.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.apache.storm</groupId>-->
+      <!--<artifactId>storm-hbase</artifactId>-->
+      <!--<version>${project.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.apache.storm</groupId>-->
+      <!--<artifactId>storm-redis</artifactId>-->
+      <!--<version>${project.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>com.datastax.cassandra</groupId>-->
+      <!--<artifactId>cassandra-driver-core</artifactId>-->
+      <!--<version>3.3.0</version>-->
+    <!--</dependency>-->
   </dependencies>
+
+
+  <profiles>
+    <profile>
+      <id>intellij</id>
+      <properties>
+        <provided.scope>compile</provided.scope>
+      </properties>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>
@@ -108,6 +252,47 @@
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <createDependencyReducedPom>true</createDependencyReducedPom>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.sf</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.dsa</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+                <exclude>META-INF/*.rsa</exclude>
+                <exclude>META-INF/*.EC</exclude>
+                <exclude>META-INF/*.ec</exclude>
+                <exclude>META-INF/MSFTSIG.SF</exclude>
+                <exclude>META-INF/MSFTSIG.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer
+                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <transformer
+                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

@@ -13,6 +13,7 @@ import org.apache.storm.kafka.bolt.mapper.FieldNameBasedTupleToKafkaMapper;
 import org.apache.storm.kafka.bolt.selector.DefaultTopicSelector;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.TopologyBuilder;
+import org.pgmx.cloudpoc.poc2.bolt.FieldReducerBolt;
 import org.pgmx.cloudpoc.poc2.bolt.MicroBatchFieldReducerBolt;
 
 import java.util.Properties;
@@ -23,11 +24,16 @@ public class KafkaLocalReaderTopology {
     private static final String ZK_LOCAL_HOST = "localhost:2181";
 
     //private static final String KAFKA_BOOTSTRAP_SERVER = "localhost:2181";
-    private static final String INPUT_TOPIC = "test";
-    private static final String OUTPUT_TOPIC = "testclean";
+    private static final String INPUT_TOPIC = "raw";
+    private static final String OUTPUT_TOPIC = "proc";
     private static final String BROKER_URL = "localhost:9092";
     private static final String ZK_ROOT = "/brokers";
     private static final String CLIENT_ID = UUID.randomUUID().toString();
+
+    // Storm tuning parameters
+    private static final int PARALLELISM_HINT = 5;
+    private static final int NUM_TASK_PER_ENTITY = 2;
+    private static final int NUM_WORKERS = 1;
 
     private static final Logger LOG = Logger.getLogger(KafkaLocalReaderTopology.class);
 
@@ -45,7 +51,7 @@ public class KafkaLocalReaderTopology {
         kafkaConf.retryLimit = 0;
         kafkaConf.scheme = new SchemeAsMultiScheme(new StringScheme());
 
-        // Build topology to consume message from kafka and print them on console
+        // Build topology to consume message from kafka and  print them on console
         final TopologyBuilder topologyBuilder = new TopologyBuilder();
 
         // FIXME - disable debug
@@ -53,24 +59,24 @@ public class KafkaLocalReaderTopology {
         config.setDebug(false);
 
         // FIXME experimental
-        config.setNumWorkers(1);
+        config.setNumWorkers(NUM_WORKERS);
 
 
         // ********************************************************************************
         // ********************* 1. Spout that reads from Kafka ***************************
         // ********************************************************************************
         KafkaSpout kafkaSpout = new KafkaSpout(kafkaConf);
-        topologyBuilder.setSpout("kafka-spout", kafkaSpout, 15).setNumTasks(2);
+        topologyBuilder.setSpout("kafka-spout", kafkaSpout, PARALLELISM_HINT).setNumTasks(NUM_TASK_PER_ENTITY);
 
 
         // ********************************************************************************
         // ********************** 2. Bolt that reads from Spout ***************************
         // ********************************************************************************
         //Route the output of Kafka Spout to Logger bolt to log messages consumed from Kafka
-        // topologyBuilder.setBolt("reduce-fields", new FieldReducerBolt(), 15).setNumTasks(2)
-        //         .globalGrouping("kafka-spout");
-        topologyBuilder.setBolt("reduce-fields", new MicroBatchFieldReducerBolt(), 15).setNumTasks(2)
-                .globalGrouping("kafka-spout");
+         topologyBuilder.setBolt("reduce-fields", new FieldReducerBolt(), PARALLELISM_HINT)
+                 .setNumTasks(NUM_TASK_PER_ENTITY).globalGrouping("kafka-spout");
+        //topologyBuilder.setBolt("reduce-fields", new MicroBatchFieldReducerBolt(), PARALLELISM_HINT)
+        //        .setNumTasks(NUM_TASK_PER_ENTITY).globalGrouping("kafka-spout");
 
 
         // ********************************************************************************
@@ -86,7 +92,7 @@ public class KafkaLocalReaderTopology {
         bolt.setFireAndForget(true);
 
         // Tie the kafkabolt to reduce-field bolt
-        topologyBuilder.setBolt("kafka-producer-bolt", bolt, 15).setNumTasks(2)
+        topologyBuilder.setBolt("kafka-producer-bolt", bolt, PARALLELISM_HINT).setNumTasks(NUM_TASK_PER_ENTITY)
                 .shuffleGrouping("reduce-fields");
 
         // Submit topology to local cluster // FIXME cluster?

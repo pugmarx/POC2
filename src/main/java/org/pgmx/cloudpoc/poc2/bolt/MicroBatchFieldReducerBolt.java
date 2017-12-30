@@ -53,7 +53,7 @@ public class MicroBatchFieldReducerBolt implements IRichBolt {
         if (isTickTuple(tuple)) {
             // If so, it is indication for batch flush. But don't flush if previous
             // flush was done very recently (either due to batch size threshold was
-            // crossed or because of another tick tuple
+            // crossed or because of another tick tuple)
             //
 
             if ((System.currentTimeMillis() / 1000 - lastBatchProcessTimeSeconds) >= batchIntervalInSec) {
